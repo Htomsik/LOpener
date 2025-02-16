@@ -1,11 +1,14 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using AvaloniaUI.ViewModels;
+using AvaloniaUI.IOC;
 using AvaloniaUI.Views;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using UICore.Models;
+using UICore.Services.SettingsService;
 
 namespace AvaloniaUI;
 
@@ -15,7 +18,7 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-
+    
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -23,12 +26,22 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+            
+            Ioc.Default.ConfigureServices(
+                new ServiceCollection()
+                    .ServiceRegistration()
+                    .ViewModelRegistration()
+                    .WindowRegistration()
+                    .BuildServiceProvider());
+            
+            // TODO Change to appsettings.json
+            var memorySettings = new Settings("APP", "",new SyncSettings(SyncSettingsType.Folder, ""));
+            Ioc.Default.GetService<ISettingsService>()?.SetSettings(memorySettings);
+            
+            
+            desktop.MainWindow = Ioc.Default.GetService<MainWindow>();
         }
-
+        
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -44,4 +57,6 @@ public partial class App : Application
             BindingPlugins.DataValidators.Remove(plugin);
         }
     }
+    
+    
 }
