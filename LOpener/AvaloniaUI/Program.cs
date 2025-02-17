@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using System;
 using Serilog;
-using Serilog.Formatting.Json;
 
 namespace AvaloniaUI;
 

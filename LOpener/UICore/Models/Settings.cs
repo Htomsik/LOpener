@@ -5,8 +5,9 @@ namespace UICore.Models;
 /// <summary>
 ///     Application settings   
 /// </summary>
-public sealed record Settings(string Title, string ExePath,  SyncSettings Sync)
+public sealed record Settings(string Title, string Parameter, string ExePath,  SyncSettings Sync)
 {
+    public string Parameter { get; } = Parameter;
     public string Title { get; } = Title;
     
     public string ExePath {get;} = ExePath;
@@ -18,9 +19,9 @@ public sealed record Settings(string Title, string ExePath,  SyncSettings Sync)
 /// <summary>
 ///     File synchronizationType
 /// </summary>
-public sealed record SyncSettings(SyncSettingsType SettingsType, string Path)
+public sealed record SyncSettings(SyncSettingsType Type, string Path)
 {
-    public SyncSettingsType SettingsType { get; } = SettingsType;
+    public SyncSettingsType Type { get; } = Type;
     
     public string Path { get; } = Path;
 }

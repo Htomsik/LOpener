@@ -1,4 +1,3 @@
-using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -9,8 +8,6 @@ using AvaloniaUI.Views;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using UICore.Models;
-using UICore.Services.SettingsService;
 
 namespace AvaloniaUI;
 
@@ -33,14 +30,11 @@ public partial class App : Application
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                     .AddLogging(builder => builder.AddSerilog())
+                    .ConfigurationRegistration(desktop.Args)
                     .ServiceRegistration()
                     .ViewModelRegistration()
                     .WindowRegistration()
                     .BuildServiceProvider());
-            
-            // TODO Change to appsettings.json
-            var memorySettings = new Settings("APP", "",new SyncSettings(SyncSettingsType.Folder, ""));
-            Ioc.Default.GetService<ISettingsService>()?.SetSettings(memorySettings);
             
             desktop.MainWindow = Ioc.Default.GetService<MainWindow>();
         }

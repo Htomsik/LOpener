@@ -9,5 +9,4 @@ public interface ISettingsService
 {
     public Settings? Settings { get; }
     
-    public void SetSettings(Settings settings);
 }
