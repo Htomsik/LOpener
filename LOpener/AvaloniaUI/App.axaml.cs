@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -7,6 +8,7 @@ using AvaloniaUI.IOC;
 using AvaloniaUI.Views;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using UICore.Models;
 using UICore.Services.SettingsService;
 
@@ -27,8 +29,10 @@ public partial class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
             
+            // DI Configuration
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
+                    .AddLogging(builder => builder.AddSerilog())
                     .ServiceRegistration()
                     .ViewModelRegistration()
                     .WindowRegistration()
@@ -37,7 +41,6 @@ public partial class App : Application
             // TODO Change to appsettings.json
             var memorySettings = new Settings("APP", "",new SyncSettings(SyncSettingsType.Folder, ""));
             Ioc.Default.GetService<ISettingsService>()?.SetSettings(memorySettings);
-            
             
             desktop.MainWindow = Ioc.Default.GetService<MainWindow>();
         }
@@ -57,6 +60,4 @@ public partial class App : Application
             BindingPlugins.DataValidators.Remove(plugin);
         }
     }
-    
-    
 }
