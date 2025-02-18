@@ -8,7 +8,7 @@ public record Settings(string UpdateDirectoryPath, string UpdateFileName, IEnume
     /// <summary>
     ///     Directory with files needed to collect for update
     /// </summary>
-    public string UpdateDirectoryPath { get; } = UpdateDirectoryPath;
+    public string UpdateDirectoryPath { get; } = string.IsNullOrEmpty(UpdateDirectoryPath) ? AppContext.BaseDirectory : UpdateDirectoryPath;
     
     /// <summary>
     ///     Name wothout path of file for update info

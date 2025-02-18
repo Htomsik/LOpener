@@ -106,7 +106,7 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
     /// </summary>
     private IEnumerable<string> GetFiles(string fileFormat)
     {
-        return Directory.GetFiles(SettingsService.Settings.UpdateDirectoryPath, $"*.{fileFormat}", SearchOption.AllDirectories);
+        return Directory.GetFiles(SettingsService.Settings.UpdateDirectoryPath, $"*.{fileFormat}", SearchOption.TopDirectoryOnly);
     }
 
     /// <summary>
