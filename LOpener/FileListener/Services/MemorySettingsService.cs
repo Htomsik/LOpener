@@ -18,7 +18,7 @@ public class MemorySettingsService : ISettingsService
     {
         _logger = logger;
         _configuration = configuration;
-        Settings = new Settings(["DLL"], 10000);
+        Settings = new Settings(Directory.GetCurrentDirectory(), "Update.JSON", ["DLL"], 3600);
         
         ReadSettings();
     }
@@ -38,6 +38,10 @@ public class MemorySettingsService : ISettingsService
            if (sectionSettings != null)
            {
                Settings = sectionSettings;
+           }
+           else
+           {
+               _logger.LogWarning("{sectionName} section can't implement to class {settingsClassName}. Will be used default parameters", AppSettingsConst.FileUpdatePolitics, nameof(Settings));
            }
         }
         catch
