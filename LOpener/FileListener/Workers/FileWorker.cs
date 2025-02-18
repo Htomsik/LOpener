@@ -22,7 +22,7 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
             return;
         }
         
-        var updaterInfo = new UpdaterInfo(SettingsService.Settings.UpdateFileName,newParameters);
+        var updaterInfo = new UpdaterInfo(SettingsService.Settings.AppName,newParameters);
         
         await GenerateUpdateFile(updaterInfo, stoppingToken);
     }
