@@ -6,30 +6,27 @@ namespace FileListener.Services;
 /// <summary>
 ///     In Memory from App configuration settings service
 /// </summary>
-public class MemorySettingsService : ISettingsService
+public class MemorySettingsService(ILogger<MemorySettingsService> logger, IConfiguration configuration)
+    : ISettingsService
 {
-    public Settings Settings { get; private set; }
-    
-    private readonly ILogger<MemorySettingsService> _logger;
-    
-    private readonly IConfiguration _configuration;
+    public Settings Settings => _settings ??= ReadSettings();
+    private Settings? _settings;
 
-    public MemorySettingsService(ILogger<MemorySettingsService> logger, IConfiguration configuration)
+    public Settings ReadSettings()
     {
-        _logger = logger;
-        _configuration = configuration;
-        Settings = new Settings("NoAPP",Directory.GetCurrentDirectory(), "Update.JSON", new []{"DLL"}, 3600);
-        
-        ReadSettings();
-    }
-    
-    public void ReadSettings()
-    {
-        var section = _configuration.GetSection(AppSettingsConst.FileUpdatePolitics);
+        var settings =  
+            new Settings("NoAPP",
+                Directory.GetCurrentDirectory(),
+                "Update.JSON", 
+                new []{"DLL"},
+                3600,
+                ConfigurationType.Default);
+
+        var section = configuration.GetSection(AppSettingsConst.FileUpdatePolitics);
         if (!section.Exists())
         {
-            _logger.LogWarning("{sectionName}  section not found. Will be used default parameters", AppSettingsConst.FileUpdatePolitics);
-            return;
+            logger.LogWarning("{sectionName}  section not found. Will be used default parameters", AppSettingsConst.FileUpdatePolitics);
+            return settings;
         }
         
         try
@@ -37,16 +34,18 @@ public class MemorySettingsService : ISettingsService
            var sectionSettings = section.Get<Settings>();
            if (sectionSettings != null)
            {
-               Settings = sectionSettings;
+               settings = sectionSettings;
            }
            else
            {
-               _logger.LogWarning("{sectionName} section can't implement to class {settingsClassName}. Will be used default parameters", AppSettingsConst.FileUpdatePolitics, nameof(Settings));
+               logger.LogWarning("{sectionName} section can't implement to class {settingsClassName}. Will be used default parameters", AppSettingsConst.FileUpdatePolitics, nameof(Settings));
            }
         }
         catch
         {
-            _logger.LogWarning("{sectionName} section can't implement to class {settingsClassName}. Will be used default parameters", AppSettingsConst.FileUpdatePolitics, nameof(Settings)); 
+            logger.LogWarning("{sectionName} section can't implement to class {settingsClassName}. Will be used default parameters", AppSettingsConst.FileUpdatePolitics, nameof(Settings)); 
         }
+
+        return settings;
     }
 }

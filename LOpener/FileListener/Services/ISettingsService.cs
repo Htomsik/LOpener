@@ -8,12 +8,13 @@ namespace FileListener.Services;
 public interface ISettingsService
 {
     /// <summary>
-    ///     Application settings
+    ///     Cached outer configuration
     /// </summary>
     public Settings Settings { get; }
     
     /// <summary>
-    ///     Read outer conf and place to local storage
+    ///     Read outer configuration
     /// </summary>
-    public void ReadSettings();
+    /// <remarks> If outer configuration is broken return defaultConfig</remarks>
+    public Settings ReadSettings();
 }

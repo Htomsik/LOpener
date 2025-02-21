@@ -1,9 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace FileListener.Models;
 
 /// <summary>
 ///     Application settings
 /// </summary>
-public record Settings(string AppName, string UpdateDirectoryPath, string UpdateFileName, IEnumerable<string> FileFormats, int DelayInSeconds)
+public record Settings(string AppName, 
+    string UpdateDirectoryPath, 
+    string UpdateFileName, 
+    IEnumerable<string> FileFormats, 
+    int DelayInSeconds, 
+    ConfigurationType ConfigurationType = ConfigurationType.Outer)
 {
     /// <summary>
     ///  Application for which data collect
@@ -32,4 +39,17 @@ public record Settings(string AppName, string UpdateDirectoryPath, string Update
     ///     Collect info delay
     /// </summary>
     public int DelayInSeconds { get; } = DelayInSeconds;
-};
+
+    /// <summary>
+    ///     Configuration type for best testing
+    /// </summary>
+    [JsonIgnore]
+    public ConfigurationType ConfigurationType { get; init; } = ConfigurationType;
+
+}
+
+public enum ConfigurationType : byte
+{
+    Default,
+    Outer
+}
