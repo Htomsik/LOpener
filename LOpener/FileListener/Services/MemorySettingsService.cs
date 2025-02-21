@@ -18,7 +18,7 @@ public class MemorySettingsService : ISettingsService
     {
         _logger = logger;
         _configuration = configuration;
-        Settings = new Settings("NoAPP",Directory.GetCurrentDirectory(), "Update.JSON", ["DLL"], 3600);
+        Settings = new Settings("NoAPP",Directory.GetCurrentDirectory(), "Update.JSON", new []{"DLL"}, 3600);
         
         ReadSettings();
     }
