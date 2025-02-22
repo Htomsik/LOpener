@@ -23,14 +23,14 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
         
         var updaterInfo = new UpdaterInfo(SettingsService.Settings.AppName,newParameters);
         
+        GenerateUpdateFile(updaterInfo, stoppingToken);
         GenerateArchive(updaterInfo.FileParameters, stoppingToken);
-        await GenerateUpdateFileAsync(updaterInfo, stoppingToken);
     }
 
     /// <summary>
     ///     Generate Update File from file parameters
     /// </summary>
-    private async Task GenerateUpdateFileAsync(UpdaterInfo updaterInfo, CancellationToken stoppingToken)
+    private  void GenerateUpdateFile(UpdaterInfo updaterInfo, CancellationToken stoppingToken)
     {
         if (updaterInfo.FileParameters.Count == 0)
         {
@@ -52,7 +52,7 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
         var filePath = Path.Combine(SettingsService.Settings.UpdateDirectoryPath,SettingsService.Settings.UpdateFileName);
         try
         {
-            await File.WriteAllTextAsync(filePath, json, stoppingToken);
+             File.WriteAllText(filePath, json);
         }
         catch (Exception e)
         {
