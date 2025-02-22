@@ -18,6 +18,7 @@ public class MemorySettingsService(ILogger<MemorySettingsService> logger, IConfi
             new Settings("NoAPP",
                 Directory.GetCurrentDirectory(),
                 "Update.JSON", 
+                "Update.zip",
                 new []{"DLL"},
                 3600,
                 ConfigurationType.Default);

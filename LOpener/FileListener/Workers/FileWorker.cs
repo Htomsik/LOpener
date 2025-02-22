@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
+using System.IO.Compression;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using FileListener.Models;
 using FileListener.Services;
 
@@ -15,7 +15,6 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
     protected override async Task ProcessAsync(CancellationToken stoppingToken)
     {
         var newParameters = await ReadParametersAsync(stoppingToken);
-
         if (newParameters.Count == 0)
         {
             Logger.LogWarning("No files for generate update file were provided.");
@@ -24,13 +23,14 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
         
         var updaterInfo = new UpdaterInfo(SettingsService.Settings.AppName,newParameters);
         
-        await GenerateUpdateFile(updaterInfo, stoppingToken);
+        GenerateArchive(updaterInfo.FileParameters, stoppingToken);
+        await GenerateUpdateFileAsync(updaterInfo, stoppingToken);
     }
 
     /// <summary>
     ///     Generate Update File from file parameters
     /// </summary>
-    private async Task GenerateUpdateFile(UpdaterInfo updaterInfo, CancellationToken stoppingToken)
+    private async Task GenerateUpdateFileAsync(UpdaterInfo updaterInfo, CancellationToken stoppingToken)
     {
         if (updaterInfo.FileParameters.Count == 0)
         {
@@ -64,6 +64,46 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
     }
     
     /// <summary>
+    ///     Move updated files to archive
+    /// </summary>
+    private void GenerateArchive(ICollection<FileParameter> fileParameters, CancellationToken stoppingToken)
+    {
+        if (fileParameters.Count == 0)
+        {
+            Logger.LogWarning("No files for generate archive file were provided.");
+            return;
+        }
+        
+        var archivePath = Path.Combine(SettingsService.Settings.UpdateDirectoryPath,
+            SettingsService.Settings.UpdateArchiveFileName);
+
+        try
+        {
+            if (File.Exists(archivePath))
+            {
+                File.Delete(archivePath);
+            }
+
+            using var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create);
+            foreach (var file in fileParameters)
+            {
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    return;
+                }
+                archive.CreateEntryFromFile(file.FilePath, file.FileName);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Can't create archive. {error}", e);
+            return;
+        }
+        
+        Logger.LogInformation("Archive was created: {name}", archivePath);
+    }
+    
+    /// <summary>
     ///     Read parameters from files and generate needed info for updates
     /// </summary>
     private async Task<ICollection<FileParameter>> ReadParametersAsync(CancellationToken stoppingToken)
@@ -92,7 +132,6 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
                     fileParameters.Add(fileParameter);
                 
             }, stoppingToken);
-            
         });
         await Task.WhenAll(tasks);
         
@@ -127,12 +166,11 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
             }
             
             var fileInfo = new FileInfo(filePath);
-            var fileParameter = new FileParameter(fileInfo.Name, fileInfo.LastWriteTimeUtc);
+            var fileParameter = new FileParameter(fileInfo.Name, fileInfo.LastWriteTimeUtc, fileInfo.FullName);
             
             fileParameters.Add(fileParameter);
         }
-
-
+        
         return fileParameters;
     }
 }

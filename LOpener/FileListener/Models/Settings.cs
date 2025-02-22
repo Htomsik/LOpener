@@ -8,6 +8,7 @@ namespace FileListener.Models;
 public record Settings(string AppName, 
     string UpdateDirectoryPath, 
     string UpdateFileName, 
+    string UpdateArchiveFileName,
     IEnumerable<string> FileFormats, 
     int DelayInSeconds, 
     ConfigurationType ConfigurationType = ConfigurationType.Outer)
@@ -24,10 +25,16 @@ public record Settings(string AppName,
     public string UpdateDirectoryPath { get; } = string.IsNullOrEmpty(UpdateDirectoryPath) ? AppContext.BaseDirectory : UpdateDirectoryPath;
     
     /// <summary>
-    ///     Name without path
+    ///     Update Info file name without path
     /// </summary>
     /// <example> Update.JSON </example>
     public string UpdateFileName { get; } = UpdateFileName;
+
+    /// <summary>
+    ///     Compressed file name without path
+    /// </summary>
+    /// <example> Update.zip </example>
+    public string UpdateArchiveFileName { get; } = UpdateArchiveFileName;
     
     /// <summary>
     ///     Collected file formats

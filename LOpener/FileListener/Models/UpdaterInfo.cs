@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace FileListener.Models;
 
 
@@ -20,8 +22,10 @@ public record UpdaterInfo(string AppName, ICollection<FileParameter> FileParamet
 
 
 /// <summary>
-///     Parameters of updated files
+///     Parameters of  files
 /// </summary>
-public record FileParameter(string FileName, DateTime LastWriteTimeUtc)
+public record FileParameter(string FileName, 
+                            DateTime LastWriteTimeUtc, 
+                            [property: JsonIgnore] string FilePath)
 {
 }
