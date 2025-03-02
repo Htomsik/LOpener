@@ -3,6 +3,7 @@ using AvaloniaUI.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UICore.Services.ApplicationService;
 using UICore.Services.SettingsService;
 using UICore.Services.StatusService;
 using UICore.Services.UpdateService;
@@ -19,7 +20,9 @@ public static class IocRegistration
         services
             .AddSingleton<ISettingsService, MemorySettingsService>()
             .AddSingleton<IStatusService, StatusService>()
+            .AddSingleton<IApplicationService, ApplicationService>()
             .AddTransient<IUpdateService, DirectoryUpdateService>();
+           
     
     public static IServiceCollection ViewModelRegistration(this IServiceCollection services) =>
         services

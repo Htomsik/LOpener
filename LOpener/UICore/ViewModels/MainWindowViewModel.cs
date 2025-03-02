@@ -14,20 +14,19 @@ public partial  class MainWindowViewModel : ViewModelBase
 {
     private readonly IUpdateService _updateService;
     
- 
+    private readonly IApplicationService _applicationService;
     
-    private readonly IStatusService _statusService;
-
     [ObservableProperty] private string? _title = "LOpener";
 
     [ObservableProperty] private string? _status = "Wait...";
     
     public  MainWindowViewModel(ISettingsService settingsService, 
         IUpdateService updateService, 
+        IApplicationService applicationService,
         IStatusService statusService)
     {
         _updateService = updateService;
-        _statusService = statusService;
+        _applicationService = applicationService;
         _title = settingsService.Settings?.Title;
         
         statusService.Status += (newStatus)=>{ Status = newStatus; };
@@ -48,5 +47,7 @@ public partial  class MainWindowViewModel : ViewModelBase
     public async void Update()
     {
         await _updateService.Update();
+        await _applicationService.LaunchTarget();
+        _applicationService.Shutdown();
     }
 }

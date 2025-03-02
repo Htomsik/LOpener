@@ -8,6 +8,8 @@ using AvaloniaUI.Views;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UICore.Services.ApplicationService;
+
 namespace AvaloniaUI;
 
 public partial class App : Application
@@ -36,6 +38,11 @@ public partial class App : Application
                     .BuildServiceProvider());
             
             desktop.MainWindow = Ioc.Default.GetService<MainWindow>();
+            
+            Ioc.Default.GetService<IApplicationService>()!.ShutdownRequested += () =>
+            {
+                desktop.Shutdown();
+            };
         }
         
         base.OnFrameworkInitializationCompleted();
