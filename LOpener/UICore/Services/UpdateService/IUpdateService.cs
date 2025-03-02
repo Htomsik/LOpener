@@ -1,12 +1,16 @@
+using System.Threading.Tasks;
+
 namespace UICore.Services.UpdateService;
 
 public interface IUpdateService
 {
-    void Update();
-
+    /// <summary>
+    ///     Update files from remote to target
+    /// </summary>
+    Task<bool> Update();
     
     /// <summary>
-    ///     Check
+    ///     Comparison target files with remote
     /// </summary>
     bool NeedUpdate();
     

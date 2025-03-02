@@ -42,8 +42,7 @@
     </Design.DataContext>
     
     <Border>
-        
-        <Grid  >
+        <Grid RowDefinitions="125,Auto" >
         
             <!--    App info    -->
             <Grid Row="0" ColumnDefinitions="120,Auto">
@@ -58,8 +57,11 @@
                 </Grid>
             </Grid>
             
+            <!--    Status Bar  -->
+            <Grid Row="1">
+                <TextBlock Classes="Status" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Status}"/>
+            </Grid>
         </Grid>
     </Border>
     
-
 </Window>

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using UICore.Services.SettingsService;
+using UICore.Services.StatusService;
 using UICore.Services.UpdateService;
 using UICore.ViewModels;
 
@@ -17,6 +18,7 @@ public static class IocRegistration
     public static IServiceCollection ServiceRegistration(this IServiceCollection services) =>
         services
             .AddSingleton<ISettingsService, MemorySettingsService>()
+            .AddSingleton<IStatusService, StatusService>()
             .AddTransient<IUpdateService, DirectoryUpdateService>();
     
     public static IServiceCollection ViewModelRegistration(this IServiceCollection services) =>

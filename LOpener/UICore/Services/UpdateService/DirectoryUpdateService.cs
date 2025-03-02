@@ -1,27 +1,35 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UICore.Models;
 using UICore.Services.SettingsService;
+using UICore.Services.StatusService;
 
 namespace UICore.Services.UpdateService;
 
 /// <summary>
 ///     Update files from target local directory
 /// </summary>
-public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logger, ISettingsService settingsService)
+public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logger, ISettingsService settingsService, IStatusService statusService)
     : IUpdateService
 {
-    public void Update()
+   
+
+    
+    
+    public async Task<bool> Update()
     {
+        await statusService.ChangeStatus("Checking for updates...");
         if (!NeedUpdate())
         {
-            logger.LogInformation("[{AppName}] Update doesn't need", settingsService.Settings?.Parameter);
-            return;
+            await statusService.ChangeStatus("No updates are available");
+            return true;
         }
         
+        await statusService.ChangeStatus("Updating...");
         try
         {
             using var archive = ZipFile.Open(settingsService.Settings?.Sync.UpdateArchiveFilePath, ZipArchiveMode.Read);
@@ -33,10 +41,14 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
         }
         catch (Exception e)
         {
+            await statusService.ChangeStatus("Failed to update files");
             logger.LogError("[{AppName}] Can't decompress update archive: {message}", settingsService.Settings?.Parameter, e.Message);
+            return false;
         }
         
         logger.LogInformation("[{AppName}] Update complete", settingsService.Settings?.Parameter);
+        await statusService.ChangeStatus("Update complete");
+        return true;
     }
 
     public  bool NeedUpdate()
@@ -118,4 +130,6 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
         
         return true;
     }
+
+
 }
