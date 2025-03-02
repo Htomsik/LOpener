@@ -8,6 +8,7 @@ using AvaloniaUI.Views;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using UICore.Services.UpdateService;
 
 namespace AvaloniaUI;
 
@@ -40,6 +41,9 @@ public partial class App : Application
         }
         
         base.OnFrameworkInitializationCompleted();
+        
+        // TODO : replace after creating open app service
+        Ioc.Default.GetService<IUpdateService>().Update();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

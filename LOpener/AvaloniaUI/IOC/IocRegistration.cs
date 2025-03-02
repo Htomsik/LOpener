@@ -1,11 +1,10 @@
 using System;
 using AvaloniaUI.Views;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using UICore.Services.SettingsService;
+using UICore.Services.UpdateService;
 using UICore.ViewModels;
 
 namespace AvaloniaUI.IOC;
@@ -17,7 +16,8 @@ public static class IocRegistration
 {
     public static IServiceCollection ServiceRegistration(this IServiceCollection services) =>
         services
-            .AddSingleton<ISettingsService, MemorySettingsService>();
+            .AddSingleton<ISettingsService, MemorySettingsService>()
+            .AddTransient<IUpdateService, DirectoryUpdateService>();
     
     public static IServiceCollection ViewModelRegistration(this IServiceCollection services) =>
         services
