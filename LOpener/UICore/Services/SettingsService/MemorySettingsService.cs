@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,11 @@ public sealed class MemorySettingsService : ISettingsService
         {
             var availableApps = string.Join("",availableSettings.Select(x => x.Parameter).ToList());
             throw new NotImplementedException( $"App {appParameter} is not implemented. Available apps: {availableApps}");
+        }
+
+        if (string.IsNullOrEmpty(setting.ExePath) || !File.Exists(setting.ExePath))
+        {
+            throw new ArgumentException("Application exePath is empty or exe doesn't exist.");
         }
         
         _logger.LogWarning("Current application: {app}", appParameter);

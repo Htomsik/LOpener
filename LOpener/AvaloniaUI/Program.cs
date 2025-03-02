@@ -2,6 +2,10 @@
 using System;
 using Serilog;
 
+#if (RELEASE)
+    using Serilog.Formatting.Json;
+#endif
+
 namespace AvaloniaUI;
 
 sealed class Program

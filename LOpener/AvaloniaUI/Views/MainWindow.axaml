@@ -6,13 +6,62 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaUI.Views.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
-        Title="{Binding Title}">
-
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaToDecorationsHint = "True"
+        CanResize="False"
+        MaxHeight="160"
+        MaxWidth="300"
+        Height="160"
+        Width="300"
+        >
+    
+    <Window.Styles>
+        
+        <Style Selector="Grid.Inner">
+            <Setter Property="Margin" Value="5" />
+        </Style>
+        
+        <Style Selector="TextBlock.Main">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI Black" />
+        </Style>
+        
+        <Style Selector="TextBlock.Status">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontFamily" Value="Segoe UI Black" />
+        </Style>
+        
+    </Window.Styles>
+    
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
     
-
+    <Border>
+        <Grid RowDefinitions="125,Auto" >
+        
+            <!--    App info    -->
+            <Grid Row="0" ColumnDefinitions="120,Auto">
+                <!--    Logo    -->
+                <Grid Classes="Inner" Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Image Width="80" Height="80" Source="../Assets/AppIcon.png"></Image>
+                </Grid>
+        
+                <!--    App Name    -->
+                <Grid Classes="Inner" Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Classes="Main"  Text="{Binding Title}"></TextBlock>
+                </Grid>
+            </Grid>
+            
+            <!--    Status Bar  -->
+            <Grid Row="1">
+                <TextBlock Classes="Status" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Status}"/>
+            </Grid>
+        </Grid>
+    </Border>
+    
 </Window>

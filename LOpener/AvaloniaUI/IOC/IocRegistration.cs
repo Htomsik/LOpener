@@ -1,11 +1,12 @@
 using System;
 using AvaloniaUI.Views;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
+using UICore.Services.ApplicationService;
 using UICore.Services.SettingsService;
+using UICore.Services.StatusService;
+using UICore.Services.UpdateService;
 using UICore.ViewModels;
 
 namespace AvaloniaUI.IOC;
@@ -17,7 +18,11 @@ public static class IocRegistration
 {
     public static IServiceCollection ServiceRegistration(this IServiceCollection services) =>
         services
-            .AddSingleton<ISettingsService, MemorySettingsService>();
+            .AddSingleton<ISettingsService, MemorySettingsService>()
+            .AddSingleton<IStatusService, StatusService>()
+            .AddSingleton<IApplicationService, ApplicationService>()
+            .AddTransient<IUpdateService, DirectoryUpdateService>();
+           
     
     public static IServiceCollection ViewModelRegistration(this IServiceCollection services) =>
         services
@@ -32,9 +37,15 @@ public static class IocRegistration
     
     public static IServiceCollection ConfigurationRegistration(this IServiceCollection services, string[]? args)
     {
-        var configurationBuilder = new ConfigurationBuilder()
+#if DEBUG
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.Development.json");
+#elif RELEASE
+         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Environment.CurrentDirectory)
-            .AddJsonFile("appSettings.json");
+            .AddJsonFile("appsettings.json");
+#endif
         
         if (args is { Length: > 0 })
         {

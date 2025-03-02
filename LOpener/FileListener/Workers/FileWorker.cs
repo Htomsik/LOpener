@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Text.Json;
 using FileListener.Models;
 using FileListener.Services;
+using static System.IO.Path;
 
 namespace FileListener.Workers;
 
@@ -145,6 +146,12 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
     /// </summary>
     private IEnumerable<string> GetFiles(string fileFormat)
     {
+        if (!Directory.Exists(SettingsService.Settings.UpdateDirectoryPath))
+        {
+            Logger.LogError("Unable get files for update. Directory {UpdateDirectoryPath} does not exist.", SettingsService.Settings.UpdateDirectoryPath);
+            return [];
+        }
+        
         return Directory.GetFiles(SettingsService.Settings.UpdateDirectoryPath, $"*.{fileFormat}", SearchOption.TopDirectoryOnly);
     }
 
