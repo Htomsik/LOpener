@@ -11,3 +11,7 @@ riderModule.iml
 *.idea/
 logs/
 *.db*
+
+*Update.Json*
+*Update.zip*
+**/Target/TestConsole.dll

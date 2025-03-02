@@ -32,9 +32,15 @@ public static class IocRegistration
     
     public static IServiceCollection ConfigurationRegistration(this IServiceCollection services, string[]? args)
     {
-        var configurationBuilder = new ConfigurationBuilder()
+#if DEBUG
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.Development.json");
+#elif RELEASE
+         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Environment.CurrentDirectory)
-            .AddJsonFile("appSettings.json");
+            .AddJsonFile("appsettings.json");
+#endif
         
         if (args is { Length: > 0 })
         {
