@@ -29,12 +29,16 @@ public record Settings(string AppName,
     /// </summary>
     /// <example> Update.JSON </example>
     public string UpdateFileName { get; } = UpdateFileName;
+    
+    public string UpdateFilePath => Path.Combine(UpdateDirectoryPath, UpdateFileName);
 
     /// <summary>
     ///     Compressed file name without path
     /// </summary>
     /// <example> Update.zip </example>
     public string UpdateArchiveFileName { get; } = UpdateArchiveFileName;
+    
+    public string UpdateArchiveFilePath => Path.Combine(UpdateDirectoryPath, UpdateArchiveFileName);
     
     /// <summary>
     ///     Collected file formats
