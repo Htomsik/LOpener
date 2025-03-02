@@ -23,14 +23,14 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
         
         var updaterInfo = new UpdaterInfo(SettingsService.Settings.AppName,newParameters);
         
-        GenerateUpdateFile(updaterInfo, stoppingToken);
+        GenerateUpdateFile(updaterInfo);
         GenerateArchive(updaterInfo.FileParameters, stoppingToken);
     }
 
     /// <summary>
     ///     Generate Update File from file parameters
     /// </summary>
-    private  void GenerateUpdateFile(UpdaterInfo updaterInfo, CancellationToken stoppingToken)
+    private  void GenerateUpdateFile(UpdaterInfo updaterInfo)
     {
         if (updaterInfo.FileParameters.Count == 0)
         {
@@ -73,18 +73,27 @@ public sealed class FileWorker(ILogger<FileWorker> logger, ISettingsService sett
             Logger.LogWarning("No files for generate archive file were provided.");
             return;
         }
-        
-        var archivePath = Path.Combine(SettingsService.Settings.UpdateDirectoryPath,
-            SettingsService.Settings.UpdateArchiveFileName);
 
+        var archivePath = SettingsService.Settings.UpdateArchiveFilePath;
+        var updaterInfoPath = SettingsService.Settings.UpdateFilePath;
+        
         try
         {
             if (File.Exists(archivePath))
             {
                 File.Delete(archivePath);
             }
-
+            
             using var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create);
+            if (File.Exists(updaterInfoPath))
+            {
+                archive.CreateEntryFromFile(SettingsService.Settings.UpdateFilePath, SettingsService.Settings.UpdateFileName);
+            }
+            else
+            {
+                Logger.LogWarning("Update archive generating without {UpdateFileName}", settingsService.Settings.UpdateFileName);
+            }
+            
             foreach (var file in fileParameters)
             {
                 if (stoppingToken.IsCancellationRequested)
