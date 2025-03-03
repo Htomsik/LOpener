@@ -13,7 +13,7 @@ public interface IApplicationService
     /// <summary>
     ///     Launch target application
     /// </summary>
-    public Task LaunchTarget();
+    public Task<bool> LaunchTarget();
     
     /// <summary>
     ///     Shutdown updater
