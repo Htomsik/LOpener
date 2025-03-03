@@ -48,7 +48,7 @@ public sealed record SyncSettings(SyncSettingsType Type, string Path, string Upd
     /// <example> Update.JSON </example>
     public string UpdateFileName { get; } = UpdateFileName;
     
-    public string UpdateFilePath => System.IO.Path.Combine(Path, UpdateArchiveFileName);
+    public string UpdateFilePath => System.IO.Path.Combine(Path, UpdateFileName);
     
     /// <summary>
     ///     Compressed file name without path
