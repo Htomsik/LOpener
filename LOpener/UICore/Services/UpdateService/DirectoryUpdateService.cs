@@ -16,10 +16,6 @@ namespace UICore.Services.UpdateService;
 public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logger, ISettingsService settingsService, IStatusService statusService)
     : IUpdateService
 {
-   
-
-    
-    
     public async Task<bool> Update()
     {
         await statusService.ChangeStatus("Checking for updates...");
@@ -51,7 +47,7 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
         return true;
     }
 
-    public  bool NeedUpdate()
+    public bool NeedUpdate()
     {
         if (!CanUpdate())
         {
@@ -63,23 +59,9 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
         {
             return true;
         }
-
-        UpdaterInfo? remoteUpdaterInfo;
-        UpdaterInfo? appUpdaterInfo;
         
-        try
-        {
-            var appUpdateJson = File.ReadAllText(settingsService.Settings?.UpdateFilePath!);
-            appUpdaterInfo = JsonConvert.DeserializeObject<UpdaterInfo>(appUpdateJson);
-
-            var remoteUpdateJson = File.ReadAllText(settingsService.Settings?.UpdateFilePath!);
-            remoteUpdaterInfo = JsonConvert.DeserializeObject<UpdaterInfo>(remoteUpdateJson);
-        }
-        catch (Exception e)
-        {
-            logger.LogError("[{AppName}] Can't Deserialize update info: {Message}",settingsService.Settings?.Parameter, e.Message);
-            return false;
-        }
+        var appUpdaterInfo = GetAppUpdaterInfo();
+        var remoteUpdaterInfo = GetRemoteUpdaterInfo();
         
         if (remoteUpdaterInfo is null)
         {
@@ -92,7 +74,7 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
             logger.LogWarning("[{AppName}] App update info failed to load", settingsService.Settings?.Parameter);
             return true;   
         }
-        
+
         var nextUpdateTime = appUpdaterInfo.LastUpdateTime.AddSeconds(settingsService.Settings!.UpdateDelaySeconds);
         if (DateTime.Now < nextUpdateTime)
         {
@@ -138,6 +120,34 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
         
         return true;
     }
-
-
+    
+    public UpdaterInfo? GetAppUpdaterInfo()
+    {
+        try
+        {
+            var appUpdateJson = File.ReadAllText(settingsService.Settings?.UpdateFilePath!);
+            return JsonConvert.DeserializeObject<UpdaterInfo?>(appUpdateJson);
+        }
+        catch (Exception e)
+        {
+            logger.LogError("[{AppName}] Can't Deserialize app update info: {Message}", 
+                settingsService.Settings?.Parameter, e.Message);
+            return null;
+        }
+    }
+    
+    public UpdaterInfo? GetRemoteUpdaterInfo()
+    {
+        try
+        {
+            var remoteUpdateJson = File.ReadAllText(settingsService.Settings?.Sync.UpdateFilePath!);
+            return JsonConvert.DeserializeObject<UpdaterInfo?>(remoteUpdateJson);
+        }
+        catch (Exception e)
+        {
+            logger.LogError("[{AppName}] Can't Deserialize remote update info: {Message}", 
+                settingsService.Settings?.Parameter, e.Message);
+            return null;
+        }
+    }
 }

@@ -72,8 +72,8 @@ public class DirectoryUpdateServiceTests : IDisposable
     }
     
     [Theory]
-    [InlineData(20, true)]  // 11 секунд прошло -> true
-    [InlineData(5, false)]  // 5 секунд прошло -> false
+    [InlineData(20, true)]  
+    [InlineData(5, false)] 
     public void NeedUpdateDelayExpectedResult(
         int secondsElapsed, 
         bool expectedResult)
@@ -81,7 +81,10 @@ public class DirectoryUpdateServiceTests : IDisposable
         // Arrange
         var remoteUpdaterInfo = new UpdaterInfo(
             _data.AppName, 
-            new List<FileParameter>(), 
+            new List<FileParameter>()
+            {
+                new FileParameter("app1.dll", DateTime.Now),
+            }, 
             DateTime.Now
         );
         var appUpdaterInfo = new UpdaterInfo(
@@ -100,4 +103,78 @@ public class DirectoryUpdateServiceTests : IDisposable
         // Assert
         Assert.Equal(expectedResult, result);
     }
+    
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void GetRemoteUpdaterInfoExpectedResult(bool isValidJson)
+    {
+        // Arrange
+        var expectedUpdaterInfo = isValidJson 
+            ? new UpdaterInfo(
+                _data.AppName,
+                new List<FileParameter> 
+                { 
+                    new FileParameter("app1.dll", DateTime.Now),
+                    new FileParameter("app2.dll", DateTime.Now) 
+                },
+                DateTime.Now
+            ) 
+            : null;
+        
+        _data.CreateTempData(null, expectedUpdaterInfo);
+        var service = new DirectoryUpdateService(_mockLogger.Object, _mockSettingsService.Object, _mockStatusService.Object);
+        
+        // Act
+        var result = service.GetRemoteUpdaterInfo();
+
+        // Assert
+        if (isValidJson)
+        {
+            Assert.NotNull(result);
+            Assert.True(result.Equals(expectedUpdaterInfo));
+        }
+        else
+        {
+            Assert.Null(result);
+        }
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void GetAppUpdaterInfoExpectedResult(bool isValidJson)
+    {
+        // Arrange
+        var expectedUpdaterInfo = isValidJson 
+            ? new UpdaterInfo(
+                _data.AppName,
+                new List<FileParameter> 
+                { 
+                    new FileParameter("app1.dll", DateTime.Now),
+                    new FileParameter("app2.dll", DateTime.Now.AddDays(-1)) 
+                },
+                DateTime.Now
+            ) 
+            : null;
+
+        // Подготовка данных
+        _data.CreateTempData(expectedUpdaterInfo, null);
+        var service = new DirectoryUpdateService(_mockLogger.Object, _mockSettingsService.Object, _mockStatusService.Object);
+
+        // Act
+        var result = service.GetAppUpdaterInfo();
+
+        // Assert
+        if (isValidJson)
+        {
+            Assert.NotNull(result);
+            Assert.True(result.Equals(expectedUpdaterInfo));
+        }
+        else
+        {
+            Assert.Null(result);
+        }
+    }
+
 }

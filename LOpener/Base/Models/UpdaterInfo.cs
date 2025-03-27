@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Base.Models;
 
@@ -9,6 +10,7 @@ public record UpdaterInfo<T>(string AppName, ICollection<T> FileParameters) wher
     /// <summary>
     ///      Application for which data collect
     /// </summary>
+    [JsonProperty(Required = Required.Always)]
     public string AppName { get; set; } = AppName;
 
     /// <summary>
