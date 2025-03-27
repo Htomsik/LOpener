@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using UICore.Models;
 
 namespace UICoreTest;
@@ -32,14 +33,15 @@ internal class Data
     public Settings CreateSettings(string? appName = null, 
         string? exePath = null, 
         string? appDirectory = null,
-        string? remoteDirectory = null)
+        string? remoteDirectory = null,
+        int? updateDelaySeconds = null)
     {
         return new Settings(
             appName ?? AppName,
             appName ?? AppName,
             exePath ?? AppExePath,
             appDirectory ?? AppDirectory,
-            10,
+            updateDelaySeconds ?? 10,
             new SyncSettings(SyncSettingsType.Directory, 
                 remoteDirectory ?? RemoteDirectory, 
                 "update.json", 
@@ -75,15 +77,25 @@ internal class Data
             .Build();
     }
     
-    public void CreateTempData()
+    
+    public void CreateTempData(UpdaterInfo? appUpdaterInfo = null, UpdaterInfo? remoteUpdaterInfo = null)
     {
         DeleteTempData();
         
-        Directory.CreateDirectory(RemoteDirectory);
-        File.WriteAllText(RemoteUpdateFilePath, "{}");
-        File.WriteAllText(RemoteUpdateArchiveFilePath, "no content");
+        var remoteUpdateContent = remoteUpdaterInfo != null 
+            ? JsonConvert.SerializeObject(remoteUpdaterInfo)
+            : "{}";
         
+        var appUpdateContent = appUpdaterInfo != null 
+            ? JsonConvert.SerializeObject(appUpdaterInfo)
+            : "{}";
+        
+        Directory.CreateDirectory(RemoteDirectory);
+        File.WriteAllText(RemoteUpdateFilePath, remoteUpdateContent);
+        File.WriteAllText(RemoteUpdateArchiveFilePath, "no content");
+    
         Directory.CreateDirectory(AppDirectory);
+        File.WriteAllText(AppUpdateFilePath, appUpdateContent);
         File.WriteAllText(AppExePath, "{}");
     }
     

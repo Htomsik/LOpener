@@ -92,8 +92,16 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
             logger.LogWarning("[{AppName}] App update info failed to load", settingsService.Settings?.Parameter);
             return true;   
         }
-
-        return appUpdaterInfo.Equals(remoteUpdaterInfo);
+        
+        var nextUpdateTime = appUpdaterInfo.LastUpdateTime.AddSeconds(settingsService.Settings!.UpdateDelaySeconds);
+        if (DateTime.Now < nextUpdateTime)
+        {
+            logger.LogInformation("[{AppName}] Can't update, next update time is [{Time}]", settingsService.Settings?.Parameter, nextUpdateTime);
+            return false;   
+        }
+        
+        // Call to base for avoid child properties 
+        return !appUpdaterInfo.Equals(remoteUpdaterInfo);
     }
     
     public bool CanUpdate()

@@ -43,7 +43,7 @@ public class DirectoryUpdateServiceTests : IDisposable
     [InlineData(true, true, true, false, true, false)] // App directory doesn't exist
     [InlineData(true, true, true, true, false, false)] // App update file doesn't exist
     [InlineData(true, true, true, true, true, true)]   // All files exists
-    public void CanUpdateExpectedResult(
+    public void CanUpdateFilesExpectedResult(
         bool remoteDirectoryExists,
         bool remoteUpdateFileExists,
         bool remoteUpdateArchiveExists,
@@ -67,6 +67,36 @@ public class DirectoryUpdateServiceTests : IDisposable
         // Act
         var result = service.CanUpdate();
 
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+    
+    [Theory]
+    [InlineData(20, true)]  // 11 секунд прошло -> true
+    [InlineData(5, false)]  // 5 секунд прошло -> false
+    public void NeedUpdateDelayExpectedResult(
+        int secondsElapsed, 
+        bool expectedResult)
+    {
+        // Arrange
+        var remoteUpdaterInfo = new UpdaterInfo(
+            _data.AppName, 
+            new List<FileParameter>(), 
+            DateTime.Now
+        );
+        var appUpdaterInfo = new UpdaterInfo(
+            _data.AppName, 
+            new List<FileParameter>(), 
+            remoteUpdaterInfo.LastUpdateTime.AddSeconds(-secondsElapsed)
+        );
+        
+        _data.CreateTempData(appUpdaterInfo, remoteUpdaterInfo);
+        
+        var service = new DirectoryUpdateService(_mockLogger.Object, _mockSettingsService.Object, _mockStatusService.Object);
+    
+        // Act
+        var result = service.NeedUpdate();
+    
         // Assert
         Assert.Equal(expectedResult, result);
     }
