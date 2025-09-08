@@ -53,7 +53,7 @@ public class ApplicationServiceTests : IDisposable
             CallBase = true
         };
 
-        mockService.Setup(x => x.ProcessStart(It.IsAny<string>())).Verifiable();
+        mockService.Setup(x => x.ProcessStart(It.IsAny<string>(), It.IsAny<string>())).Verifiable();
         var service = mockService.Object;
 
         // Act
@@ -61,7 +61,7 @@ public class ApplicationServiceTests : IDisposable
 
         // Assert
         Assert.True(result);
-        mockService.Verify(x => x.ProcessStart(It.IsAny<string>()), Times.Once);
+        mockService.Verify(x => x.ProcessStart(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class ApplicationServiceTests : IDisposable
             CallBase = true
         };
 
-        mockService.Setup(x => x.ProcessStart(It.IsAny<string>())).Throws(new Exception("Process start failed"));
+        mockService.Setup(x => x.ProcessStart(It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("Process start failed"));
         var service = mockService.Object;
 
         // Act
@@ -84,7 +84,7 @@ public class ApplicationServiceTests : IDisposable
 
         // Assert
         Assert.False(result);
-        mockService.Verify(x => x.ProcessStart(It.IsAny<string>()), Times.Once);
+        mockService.Verify(x => x.ProcessStart(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]

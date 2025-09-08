@@ -26,6 +26,7 @@ public class DirectoryUpdateServiceTests : IDisposable
             _data.AppName,
             _data.AppName,
             _data.AppExePath,
+            _data.AppArgumentFilePath,
             _data.AppDirectory,
             10,
             new SyncSettings(SyncSettingsType.Directory, _data.RemoteDirectory, "update.json", "update.zip")
@@ -87,6 +88,7 @@ public class DirectoryUpdateServiceTests : IDisposable
             }, 
             DateTime.Now
         );
+        
         var appUpdaterInfo = new UpdaterInfo(
             _data.AppName, 
             new List<FileParameter>(), 

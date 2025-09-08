@@ -17,6 +17,7 @@ internal class Data
 
     public readonly string AppDirectory;
     public readonly string AppExePath;
+    public readonly string AppArgumentFilePath;
     public readonly string AppUpdateFilePath;
 
     public Data()
@@ -27,11 +28,13 @@ internal class Data
 
         AppDirectory = Path.Combine(_tempDirectory, AppName);
         AppExePath = Path.Combine(_tempDirectory, $"{AppName}.exe");
+        AppArgumentFilePath = "";
         AppUpdateFilePath = Path.Combine(AppDirectory, "update.json");
     }
     
     public Settings CreateSettings(string? appName = null, 
         string? exePath = null, 
+        string? argumentFilePath = null,
         string? appDirectory = null,
         string? remoteDirectory = null,
         int? updateDelaySeconds = null)
@@ -40,6 +43,7 @@ internal class Data
             appName ?? AppName,
             appName ?? AppName,
             exePath ?? AppExePath,
+            argumentFilePath ?? AppArgumentFilePath,
             appDirectory ?? AppDirectory,
             updateDelaySeconds ?? 10,
             new SyncSettings(SyncSettingsType.Directory, 
@@ -54,6 +58,7 @@ internal class Data
         string? defaultApp = null,
         string? availableAppName = null,
         string? exePath = null, 
+        string? argumentFilePath = null,
         string? appDirectory = null,
         string? remoteDirectory = null)
     {
@@ -64,6 +69,7 @@ internal class Data
             { "AvailableApps:0:Title", availableAppName ?? AppName },
             { "AvailableApps:0:Parameter", availableAppName ?? AppName },
             { "AvailableApps:0:ExePath", exePath ?? AppExePath },
+            { "AvailableApps:0:ArgumentFilePath", argumentFilePath ?? AppArgumentFilePath },
             { "AvailableApps:0:DirectoryPath", appDirectory ?? AppDirectory },
             { "AvailableApps:0:UpdateDelaySeconds", "10" },
             { "AvailableApps:0:Sync:Type", "Directory" },

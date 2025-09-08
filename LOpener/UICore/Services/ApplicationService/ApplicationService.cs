@@ -26,7 +26,7 @@ public class ApplicationService(ILogger<ApplicationService> logger,
         await statusService.ChangeStatus("Launching  application...");
         try
         {
-            ProcessStart(settingsService.Settings!.ExePath);
+            ProcessStart(settingsService.Settings!.ExePath, settingsService.Settings.ArgumentFilePath);
         }
         catch (Exception e)
         {
@@ -39,9 +39,17 @@ public class ApplicationService(ILogger<ApplicationService> logger,
         return true;
     }
 
-    public virtual void ProcessStart(string path)
+    public virtual void ProcessStart(string exePath, string argumentFilePath)
     {
-        Process.Start(path);
+        var withArguments = argumentFilePath != string.Empty && File.Exists(argumentFilePath);
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments =  withArguments ? "\"" + argumentFilePath + "\"" : string.Empty, 
+            UseShellExecute = false
+        };
+        
+        Process.Start(processInfo);
     }
 
     public void Shutdown()

@@ -10,6 +10,7 @@ namespace UICore.Models;
 public sealed record Settings(string Title, 
     string Parameter, 
     string ExePath, 
+    string ArgumentFilePath,
     string DirectoryPath, 
     int UpdateDelaySeconds,
     SyncSettings Sync)
@@ -19,6 +20,11 @@ public sealed record Settings(string Title,
     public string Title { get; } = Title;
     
     public string ExePath { get; } = ExePath;
+    
+    /// <summary>
+    ///     Exe file will be opened with this argument file
+    /// </summary>
+    public string ArgumentFilePath { get; } = ArgumentFilePath;
     
     public string DirectoryPath { get; } = DirectoryPath;
 

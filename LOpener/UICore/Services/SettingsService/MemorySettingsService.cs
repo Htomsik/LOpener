@@ -51,6 +51,7 @@ public sealed class MemorySettingsService : ISettingsService
             throw new ArgumentException("Application exePath is empty or exe doesn't exist.");
         }
         
+        
         _logger.LogWarning("Current application: {app}", appParameter);
         Settings = setting;
     }
