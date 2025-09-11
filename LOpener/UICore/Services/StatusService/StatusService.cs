@@ -5,7 +5,7 @@ namespace UICore.Services.StatusService;
 
 public class StatusService : IStatusService
 {
-    public int StageDelayInMs { get; set; } = 500;
+    public int StageDelayInMs { get; set; } = 700;
     
     public event Action<string>? Status;
     
