@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -118,6 +119,13 @@ public sealed class DirectoryUpdateService(ILogger<DirectoryUpdateService> logge
             return false;
         }
         
+        var haveInstance = Process.GetProcessesByName(settingsService.Settings?.ExeName).Length > 0;
+        if (haveInstance)
+        {
+            logger.LogWarning("[{AppName}] Another app Instance {file} is launched", settingsService.Settings?.Parameter, settingsService.Settings?.ExeName);
+            return false;
+        }
+
         return true;
     }
     

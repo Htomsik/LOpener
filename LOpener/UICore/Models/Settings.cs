@@ -1,17 +1,16 @@
+using System.Diagnostics;
 using System.IO;
 
 namespace UICore.Models;
 
-
-
 /// <summary>
 ///     Application settings   
 /// </summary>
-public sealed record Settings(string Title, 
-    string Parameter, 
-    string ExePath, 
+public sealed record Settings(string Title,
+    string Parameter,
+    string ExePath,
     string ArgumentFilePath,
-    string DirectoryPath, 
+    string DirectoryPath,
     int UpdateDelaySeconds,
     SyncSettings Sync)
 {
@@ -20,6 +19,8 @@ public sealed record Settings(string Title,
     public string Title { get; } = Title;
     
     public string ExePath { get; } = ExePath;
+    
+    public string ExeName => Path.GetFileNameWithoutExtension(ExePath);
     
     /// <summary>
     ///     Exe file will be opened with this argument file
@@ -61,8 +62,8 @@ public sealed record SyncSettings(SyncSettingsType Type, string Path, string Upd
     /// </summary>
     /// <example> Update.zip </example>
     public string UpdateArchiveFileName { get; } = UpdateArchiveFileName;
-    public string UpdateArchiveFilePath => System.IO.Path.Combine(Path, UpdateArchiveFileName);
     
+    public string UpdateArchiveFilePath => System.IO.Path.Combine(Path, UpdateArchiveFileName);
 }
 
 /// <summary>
